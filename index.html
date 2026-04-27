@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cloudflare × Web3 解决方案</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cf-orange: #F38020;
+  --cf-orange-2: #F5952E;
+  --cf-orange-light: #FFF4EC;
+  --cf-dark: #0F0F0F;
+  --cf-dark-2: #1A1A1A;
+  --cf-dark-3: #252525;
+  --cf-text: #F0EDE8;
+  --cf-text-2: #A89F95;
+  --cf-text-3: #6B6560;
+  --cf-border: rgba(243,128,32,0.15);
+  --cf-border-2: rgba(243,128,32,0.08);
+  --blue: #3B82F6;
+  --blue-light: rgba(59,130,246,0.1);
+  --teal: #14B8A6;
+  --teal-light: rgba(20,184,166,0.1);
+  --purple: #8B5CF6;
+  --purple-light: rgba(139,92,246,0.1);
+  --green: #22C55E;
+  --green-light: rgba(34,197,94,0.1);
+  --red: #EF4444;
+  --red-light: rgba(239,68,68,0.1);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--cf-dark);
+  color: var(--cf-text);
+  font-family: 'Noto Sans SC', sans-serif;
+  min-height: 100vh;
+}
+
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background-image:
+    linear-gradient(rgba(243,128,32,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(243,128,32,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events:none; z-index:0;
+}
+
+/* ── NAV ── */
+.nav {
+  position: relative; z-index:20;
+  display: flex; align-items: center;
+  padding: 16px 60px;
+  border-bottom: 1px solid var(--cf-border-2);
+  gap: 8px;
+}
+
+.nav-logo {
+  background: var(--cf-orange);
+  color: white;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; font-weight:500;
+  letter-spacing: 2px; padding: 4px 10px;
+  border-radius: 3px; margin-right: 16px;
+}
+
+.nav-tab {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing:1px;
+  padding: 6px 14px; border-radius: 4px;
+  cursor: pointer; text-decoration: none;
+  color: var(--cf-text-3);
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+.nav-tab:hover { color: var(--cf-text-2); border-color: var(--cf-border-2); }
+.nav-tab.active {
+  color: var(--cf-orange);
+  background: rgba(243,128,32,0.08);
+  border-color: var(--cf-border);
+}
+
+/* ── HEADER ── */
+.header {
+  position:relative; z-index:10;
+  padding: 40px 60px 24px;
+  border-bottom: 1px solid var(--cf-border-2);
+  display: flex; align-items: flex-end; justify-content: space-between;
+}
+
+.header-main h1 {
+  font-family:'Syne',sans-serif;
+  font-size:38px; font-weight:800;
+  letter-spacing:-1px; line-height:1.1;
+}
+.header-main h1 span { color: var(--cf-orange); }
+.header-sub {
+  margin-top:8px; font-size:13px;
+  color:var(--cf-text-2); font-weight:300;
+}
+
+.header-stats {
+  display:flex; gap:24px; text-align:right;
+}
+.stat-item { font-family:'DM Mono',monospace; font-size:10px; color:var(--cf-text-3); }
+.stat-item strong { display:block; font-size:16px; color:var(--cf-orange); margin-bottom:2px; }
+
+/* ── INTRO SECTION ── */
+.intro {
+  position:relative; z-index:10;
+  padding: 32px 60px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  border-bottom: 1px solid var(--cf-border-2);
+}
+
+.intro-card {
+  background: var(--cf-dark-2);
+  border: 1px solid var(--cf-border-2);
+  border-radius: 8px;
+  padding: 20px 24px;
+  position: relative; overflow: hidden;
+}
+.intro-card::before {
+  content:''; position:absolute;
+  left:0; top:0; bottom:0; width:3px;
+  background: var(--cf-orange);
+}
+
+.intro-card-num {
+  font-family:'DM Mono',monospace;
+  font-size:9px; color:var(--cf-orange);
+  letter-spacing:2px; margin-bottom:8px;
+}
+.intro-card-title {
+  font-family:'Syne',sans-serif;
+  font-size:15px; font-weight:700;
+  color:var(--cf-text); margin-bottom:10px;
+}
+.intro-card-body { font-size:12px; color:var(--cf-text-2); line-height:1.7; }
+
+.intro-tags {
+  display:flex; flex-wrap:wrap; gap:6px; margin-top:12px;
+}
+.intro-tag {
+  font-family:'DM Mono',monospace;
+  font-size:9px; letter-spacing:0.5px;
+  padding:3px 8px; border-radius:3px;
+  background:rgba(243,128,32,0.1);
+  border:1px solid rgba(243,128,32,0.2);
+  color:var(--cf-orange);
+}
+
+/* ── SECTION TITLE ── */
+.section-title {
+  position:relative; z-index:10;
+  padding: 24px 60px 0;
+  display:flex; align-items:center; gap:12px;
+}
+.section-title-text {
+  font-family:'DM Mono',monospace;
+  font-size:9px; color:var(--cf-orange);
+  letter-spacing:2px;
+}
+.section-title-line {
+  flex:1; height:1px;
+  background: linear-gradient(to right, var(--cf-border), transparent);
+}
+
+/* ── SOLUTION CARDS GRID ── */
+.solutions {
+  position:relative; z-index:10;
+  padding: 20px 60px 40px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.sol-card {
+  background: var(--cf-dark-2);
+  border: 1px solid var(--cf-border-2);
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+
+.sol-card:hover {
+  border-color: var(--cf-border);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+}
+
+.sol-card.expanded { border-color: var(--cf-border); }
+
+/* Card color variants */
+.sol-card.orange .sol-header { border-bottom-color: rgba(243,128,32,0.2); }
+.sol-card.orange .sol-icon-bg { background: rgba(243,128,32,0.12); }
+.sol-card.orange .sol-icon { color: var(--cf-orange); }
+.sol-card.orange .sol-tag { background:rgba(243,128,32,0.1); border-color:rgba(243,128,32,0.25); color:var(--cf-orange); }
+.sol-card.orange .pain-label { color:var(--cf-orange); }
+.sol-card.orange .sol-expand-line { background:var(--cf-border); }
+
+.sol-card.blue .sol-header { border-bottom-color: rgba(59,130,246,0.2); }
+.sol-card.blue .sol-icon-bg { background: var(--blue-light); }
+.sol-card.blue .sol-icon { color: var(--blue); }
+.sol-card.blue .sol-tag { background:rgba(59,130,246,0.1); border-color:rgba(59,130,246,0.25); color:var(--blue); }
+.sol-card.blue .pain-label { color:var(--blue); }
+
+.sol-card.teal .sol-header { border-bottom-color: rgba(20,184,166,0.2); }
+.sol-card.teal .sol-icon-bg { background: var(--teal-light); }
+.sol-card.teal .sol-icon { color: var(--teal); }
+.sol-card.teal .sol-tag { background:rgba(20,184,166,0.1); border-color:rgba(20,184,166,0.25); color:var(--teal); }
+.sol-card.teal .pain-label { color:var(--teal); }
+
+.sol-card.purple .sol-header { border-bottom-color: rgba(139,92,246,0.2); }
+.sol-card.purple .sol-icon-bg { background: var(--purple-light); }
+.sol-card.purple .sol-icon { color: var(--purple); }
+.sol-card.purple .sol-tag { background:rgba(139,92,246,0.1); border-color:rgba(139,92,246,0.25); color:var(--purple); }
+.sol-card.purple .pain-label { color:var(--purple); }
+
+.sol-card.green .sol-header { border-bottom-color: rgba(34,197,94,0.2); }
+.sol-card.green .sol-icon-bg { background: var(--green-light); }
+.sol-card.green .sol-icon { color: var(--green); }
+.sol-card.green .sol-tag { background:rgba(34,197,94,0.1); border-color:rgba(34,197,94,0.25); color:var(--green); }
+.sol-card.green .pain-label { color:var(--green); }
+
+.sol-card.red .sol-header { border-bottom-color: rgba(239,68,68,0.2); }
+.sol-card.red .sol-icon-bg { background: var(--red-light); }
+.sol-card.red .sol-icon { color: var(--red); }
+.sol-card.red .sol-tag { background:rgba(239,68,68,0.1); border-color:rgba(239,68,68,0.25); color:var(--red); }
+.sol-card.red .pain-label { color:var(--red); }
+
+/* Card header (always visible) */
+.sol-header {
+  padding: 16px 18px;
+  border-bottom: 1px solid transparent;
+  display:flex; align-items:flex-start; gap:12px;
+}
+
+.sol-icon-bg {
+  width:36px; height:36px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; font-size:17px;
+}
+
+.sol-header-text { flex:1; }
+
+.sol-title {
+  font-family:'Syne',sans-serif;
+  font-size:13px; font-weight:700;
+  color:var(--cf-text); line-height:1.3;
+  margin-bottom:4px;
+}
+
+.sol-web3-match {
+  font-size:10px; color:var(--cf-text-3);
+  font-weight:300;
+}
+
+.sol-arrow {
+  font-size:11px; color:var(--cf-text-3);
+  transition:transform 0.25s; margin-top:2px;
+  flex-shrink:0;
+}
+.sol-card.expanded .sol-arrow { transform:rotate(180deg); }
+
+/* Tags row */
+.sol-tags {
+  padding: 0 18px 14px;
+  display:flex; flex-wrap:wrap; gap:5px;
+}
+
+.sol-tag {
+  font-family:'DM Mono',monospace;
+  font-size:8.5px; letter-spacing:0.3px;
+  padding:2px 7px; border-radius:3px;
+  border:1px solid;
+}
+
+/* Expandable body */
+.sol-body {
+  max-height:0; overflow:hidden;
+  transition:max-height 0.35s cubic-bezier(0.4,0,0.2,1);
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+.sol-card.expanded .sol-body { max-height:600px; }
+
+.sol-body-inner { padding:16px 18px; }
+
+/* Pain points */
+.pain-section { margin-bottom:14px; }
+.pain-label {
+  font-family:'DM Mono',monospace;
+  font-size:8.5px; letter-spacing:1.5px;
+  margin-bottom:8px;
+}
+
+.pain-list { display:flex; flex-direction:column; gap:5px; }
+.pain-item {
+  display:flex; align-items:flex-start; gap:7px;
+  font-size:11px; color:var(--cf-text-2); line-height:1.5;
+}
+.pain-dot {
+  width:4px; height:4px; border-radius:50%;
+  background:var(--cf-text-3); flex-shrink:0; margin-top:5px;
+}
+
+/* Products */
+.prod-section { margin-bottom:14px; }
+.prod-label {
+  font-family:'DM Mono',monospace;
+  font-size:8.5px; color:var(--cf-orange);
+  letter-spacing:1.5px; margin-bottom:8px;
+}
+.prod-grid { display:flex; flex-wrap:wrap; gap:5px; }
+.prod-pill {
+  font-family:'DM Mono',monospace;
+  font-size:9px; padding:3px 9px;
+  border-radius:4px;
+  background:rgba(243,128,32,0.1);
+  border:1px solid rgba(243,128,32,0.2);
+  color:var(--cf-orange);
+}
+
+/* Case study */
+.case-section {}
+.case-label {
+  font-family:'DM Mono',monospace;
+  font-size:8.5px; color:var(--cf-text-3);
+  letter-spacing:1.5px; margin-bottom:8px;
+}
+
+.case-card {
+  background:var(--cf-dark-3);
+  border:1px solid var(--cf-border-2);
+  border-radius:6px; padding:10px 12px;
+}
+
+.case-company {
+  font-family:'Syne',sans-serif;
+  font-size:11px; font-weight:700;
+  color:var(--cf-text); margin-bottom:4px;
+  display:flex; align-items:center; gap:6px;
+}
+.case-company-badge {
+  font-family:'DM Mono',monospace;
+  font-size:8px; padding:1px 6px;
+  border-radius:3px; background:rgba(243,128,32,0.12);
+  color:var(--cf-orange); border:1px solid rgba(243,128,32,0.2);
+}
+
+.case-result {
+  font-size:10px; color:var(--cf-text-2);
+  line-height:1.5; margin-bottom:6px;
+}
+.case-quote {
+  font-size:10px; color:var(--cf-text-3);
+  font-style:italic; line-height:1.5;
+  border-left:2px solid var(--cf-border);
+  padding-left:8px;
+}
+
+/* Web3 mapping */
+.web3-map {
+  margin-top:12px; padding-top:12px;
+  border-top:1px solid rgba(255,255,255,0.05);
+}
+.web3-map-label {
+  font-family:'DM Mono',monospace;
+  font-size:8px; color:var(--cf-text-3);
+  letter-spacing:1px; margin-bottom:6px;
+}
+.web3-map-items {
+  display:flex; flex-wrap:wrap; gap:4px;
+}
+.web3-map-item {
+  font-size:10px; color:var(--cf-text-2);
+  background:var(--cf-dark-3);
+  border:1px solid var(--cf-border-2);
+  padding:2px 8px; border-radius:3px;
+}
+
+/* ── FOOTER ── */
+.footer {
+  position:relative; z-index:10;
+  padding:20px 60px;
+  border-top:1px solid var(--cf-border-2);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.footer-left {
+  font-family:'DM Mono',monospace;
+  font-size:10px; color:var(--cf-text-3); letter-spacing:1px;
+}
+.footer-right { display:flex; gap:10px; }
+.footer-tag {
+  font-family:'DM Mono',monospace; font-size:9px;
+  color:var(--cf-text-3); background:var(--cf-dark-3);
+  border:1px solid var(--cf-border-2);
+  padding:3px 8px; border-radius:3px;
+}
+
+/* Animate cards on load */
+.sol-card { animation: fadeUp 0.4s both; }
+.sol-card:nth-child(1){animation-delay:0.05s}
+.sol-card:nth-child(2){animation-delay:0.1s}
+.sol-card:nth-child(3){animation-delay:0.15s}
+.sol-card:nth-child(4){animation-delay:0.2s}
+.sol-card:nth-child(5){animation-delay:0.25s}
+.sol-card:nth-child(6){animation-delay:0.3s}
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(16px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <span class="nav-logo">☁ CLOUDFLARE</span>
+  <a href="web3_ecosystem.html" class="nav-tab">01 行业全景图</a>
+  <span class="nav-tab active">02 解决方案</span>
+</nav>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-main">
+    <h1>Cloudflare <span>如何服务</span> Web3</h1>
+    <div class="header-sub">Connect · Protect · Build — 覆盖 Web3 每一层的基础设施需求 · 点击卡片展开详情</div>
+  </div>
+  <div class="header-stats">
+    <div class="stat-item"><strong>330+</strong>全球城市节点</div>
+    <div class="stat-item"><strong>477 Tbps</strong>网络容量</div>
+    <div class="stat-item"><strong>2470亿</strong>每日拦截威胁</div>
+    <div class="stat-item"><strong>20%</strong>互联网流量代理</div>
+  </div>
+</div>
+
+<!-- INTRO: Why Cloudflare -->
+<div class="intro">
+  <div class="intro-card">
+    <div class="intro-card-num">CLOUDFLARE 核心优势 01</div>
+    <div class="intro-card-title">🌐 全球最快、最安全的网络基础设施</div>
+    <div class="intro-card-body">
+      330个城市边缘节点，覆盖全球95%互联网用户 50ms 内触达。477 Tbps 网络容量，每日拦截 2470 亿次威胁。
+      全球最互联的网络之一，与 13,000+ 个网络直接对等互联，无需绕道公共互联网。
+      <br><br>
+      对 Web3 的意义：交易所宕机1秒 = 直接收入损失；全球用户低延迟访问 = 更多成交。
+    </div>
+    <div class="intro-tags">
+      <span class="intro-tag">330+ 城市</span>
+      <span class="intro-tag">477 Tbps</span>
+      <span class="intro-tag">50ms 触达95%用户</span>
+      <span class="intro-tag">Anycast 网络</span>
+    </div>
+  </div>
+  <div class="intro-card">
+    <div class="intro-card-num">CLOUDFLARE 核心优势 02</div>
+    <div class="intro-card-title">📦 一个平台，60+ 产品，一张账单</div>
+    <div class="intro-card-body">
+      安全（WAF、DDoS、Bot）+ 性能（CDN、Workers）+ 员工安全（Zero Trust、SASE）+ 开发者工具（Workers、R2、D1）+ AI 支付（x402）——全部在一个控制台管理。
+      <br><br>
+      对比：AWS 需要拼接 WAF + Shield + CloudFront + Lambda@Edge 等 10 个服务，配置复杂、账单混乱。Cloudflare 是"一件事买断"。
+    </div>
+    <div class="intro-tags">
+      <span class="intro-tag">应用安全</span>
+      <span class="intro-tag">Zero Trust SASE</span>
+      <span class="intro-tag">开发者平台</span>
+      <span class="intro-tag">AI Gateway</span>
+      <span class="intro-tag">x402 协议</span>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION TITLE -->
+<div class="section-title">
+  <span class="section-title-text">WEB3 需求场景 × CLOUDFLARE 解决方案</span>
+  <div class="section-title-line"></div>
+</div>
+
+<!-- SOLUTION CARDS -->
+<div class="solutions">
+
+  <!-- 1. 抗攻击高可用 -->
+  <div class="sol-card orange" onclick="toggle(this)">
+    <div class="sol-header">
+      <div class="sol-icon-bg"><span class="sol-icon">🛡</span></div>
+      <div class="sol-header-text">
+        <div class="sol-title">抗攻击 · 高可用</div>
+        <div class="sol-web3-match">对标：CEX · DEX · NFT平台 · 节点服务商</div>
+      </div>
+      <span class="sol-arrow">▾</span>
+    </div>
+    <div class="sol-tags">
+      <span class="sol-tag">DDoS 防护</span>
+      <span class="sol-tag">WAF</span>
+      <span class="sol-tag">Magic Transit</span>
+      <span class="sol-tag">Rate Limiting</span>
+    </div>
+    <div class="sol-body">
+      <div class="sol-body-inner">
+        <div class="pain-section">
+          <div class="pain-label">WEB3 痛点</div>
+          <div class="pain-list">
+            <div class="pain-item"><div class="pain-dot"></div>CEX 宕机 1 小时 = 数百万美元交易手续费损失，用户大量流失竞品</div>
+            <div class="pain-item"><div class="pain-dot"></div>63% 加密行业 DDoS 攻击来自竞争对手蓄意发动（Cloudflare 2025 Q2报告）</div>
+            <div class="pain-item"><div class="pain-dot"></div>NFT 发售瞬间流量峰值可达平时 100x，传统服务器无法应对</div>
+            <div class="pain-item"><div class="pain-dot"></div>2025 年 Web3 行业安全损失 $33.5 亿，同比 +37%（CertiK 2025）</div>
+          </div>
+        </div>
+        <div class="prod-section">
+          <div class="prod-label">CLOUDFLARE 产品</div>
+          <div class="prod-grid">
+            <span class="prod-pill">无限量 DDoS 防护</span>
+            <span class="prod-pill">WAF（托管规则）</span>
+            <span class="prod-pill">Magic Transit（L3/4）</span>
+            <span class="prod-pill">Rate Limiting</span>
+            <span class="prod-pill">Anycast 网络</span>
+          </div>
+        </div>
+        <div class="case-section">
+          <div class="case-label">真实案例 → Web3 映射</div>
+          <div class="case-card">
+            <div class="case-company">Amber Group（数字资产交易）<span class="case-company-badge">已使用 Cloudflare</span></div>
+            <div class="case-result">部署 Cloudflare WAF 后实时防御多种链上攻击，保护客户资产数据。使用 Argo Smart Routing 动态绕过网络拥塞，确保交易低延迟。</div>
+            <div class="case-quote">"Cloudflare 提供了全面解决我们所有需求的方案——全球网络、先进安全功能和灵活定价。"— CTO Liu Li</div>
+            <div class="web3-map">
+              <div class="web3-map-label">WEB3 同类客户</div>
+              <div class="web3-map-items">
+                <span class="web3-map-item">Binance / OKX（CEX）</span>
+                <span class="web3-map-item">Hyperliquid（DEX）</span>
+                <span class="web3-map-item">OpenSea（NFT）</span>
+                <span class="web3-map-item">Alchemy（RPC节点）</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Bot防护/防刷 -->
+  <div class="sol-card blue" onclick="toggle(this)">
+    <div class="sol-header">
+      <div class="sol-icon-bg"><span class="sol-icon">🤖</span></div>
+      <div class="sol-header-text">
+        <div class="sol-title">Bot 防护 · 防刷防爬</div>
+        <div class="sol-web3-match">对标：NFT平台 · CEX · 数据API · DEX</div>
+      </div>
+      <span class="sol-arrow">▾</span>
+    </div>
+    <div class="sol-tags">
+      <span class="sol-tag">Bot Management</span>
+      <span class="sol-tag">Turnstile</span>
+      <span class="sol-tag">API Shield</span>
+      <span class="sol-tag">Rate Limiting</span>
+    </div>
+    <div class="sol-body">
+      <div class="sol-body-inner">
+        <div class="pain-section">
+          <div class="pain-label">WEB3 痛点</div>
+          <div class="pain-list">
+            <div class="pain-item"><div class="pain-dot"></div>NFT 发售 Bot 抢购：真实用户根本抢不到，平台口碑崩塌</div>
+            <div class="pain-item"><div class="pain-dot"></div>CEX 撞库攻击：Bot 用泄露密码批量尝试登录，账户被盗</div>
+            <div class="pain-item"><div class="pain-dot"></div>DEX 套利机器人（MEV Bot）前置交易，损害普通用户体验</div>
+            <div class="pain-item"><div class="pain-dot"></div>链上数据 API 被恶意爬虫滥用，计算成本暴增</div>
+            <div class="pain-item"><div class="pain-dot"></div>AI 爬虫无授权抓取平台内容，内容被免费训练 AI 模型</div>
+          </div>
+        </div>
+        <div class="prod-section">
+          <div class="prod-label">CLOUDFLARE 产品</div>
+          <div class="prod-grid">
+            <span class="prod-pill">Bot Management（ML检测）</span>
+            <span class="prod-pill">Turnstile（无感验证码）</span>
+            <span class="prod-pill">API Shield（流量分析）</span>
+            <span class="prod-pill">Rate Limiting</span>
+            <span class="prod-pill">x402（AI爬虫收费）</span>
+          </div>
+        </div>
+        <div class="case-section">
+          <div class="case-label">真实案例 → Web3 映射</div>
+          <div class="case-card">
+            <div class="case-company">Bitpanda（加密交易平台）<span class="case-company-badge">已使用 Cloudflare</span></div>
+            <div class="case-result">依靠 Cloudflare 防御自动化攻击和账户接管（Account Takeover），保护平台和用户资产安全。</div>
+            <div class="web3-map">
+              <div class="web3-map-label">WEB3 同类客户</div>
+              <div class="web3-map-items">
+                <span class="web3-map-item">OpenSea / Blur（NFT防抢购）</span>
+                <span class="web3-map-item">CMC / CoinGecko（防爬虫）</span>
+                <span class="web3-map-item">Binance（防撞库）</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. API高频访问 -->
+  <div class="sol-card teal" onclick="toggle(this)">
+    <div class="sol-header">
+      <div class="sol-icon-bg"><span class="sol-icon">⚡</span></div>
+      <div class="sol-header-text">
+        <div class="sol-title">高频 API · 峰值流量</div>
+        <div class="sol-web3-match">对标：RPC节点 · DEX API · 支付网关</div>
+      </div>
+      <span class="sol-arrow">▾</span>
+    </div>
+    <div class="sol-tags">
+      <span class="sol-tag">API Shield</span>
+      <span class="sol-tag">CDN 缓存</span>
+      <span class="sol-tag">Load Balancing</span>
+      <span class="sol-tag">Workers</span>
+    </div>
+    <div class="sol-body">
+      <div class="sol-body-inner">
+        <div class="pain-section">
+          <div class="pain-label">WEB3 痛点</div>
+          <div class="pain-list">
+            <div class="pain-item"><div class="pain-dot"></div>RPC 节点 API 每秒处理数百万次链上查询请求，延迟直接影响交易成败</div>
+            <div class="pain-item"><div class="pain-dot"></div>支付 API 在节假日、重大事件时流量尖峰，传统 WAF 无法弹性扩展</div>
+            <div class="pain-item"><div class="pain-dot"></div>跨境 API 调用延迟高：东南亚用户访问欧洲节点延迟 300ms+</div>
+          </div>
+        </div>
+        <div class="prod-section">
+          <div class="prod-label">CLOUDFLARE 产品</div>
+          <div class="prod-grid">
+            <span class="prod-pill">API Shield（异常检测）</span>
+            <span class="prod-pill">CDN 智能缓存</span>
+            <span class="prod-pill">Load Balancing</span>
+            <span class="prod-pill">Argo Smart Routing</span>
+            <span class="prod-pill">Workers（边缘处理）</span>
+          </div>
+        </div>
+        <div class="case-section">
+          <div class="case-label">真实案例 → Web3 映射</div>
+          <div class="case-card">
+            <div class="case-company">PayNet（马来西亚国家支付网络）<span class="case-company-badge">已使用 Cloudflare</span></div>
+            <div class="case-result">从传统 WAF 迁移至 Cloudflare，实现 API 访问峰值弹性扩展、Zero Trust 安全模型、DDoS 防护。选择 Cloudflare 的理由：易用性、创新速度、透明定价。</div>
+            <div class="web3-map">
+              <div class="web3-map-label">WEB3 同类客户</div>
+              <div class="web3-map-items">
+                <span class="web3-map-item">Alchemy / QuickNode（RPC）</span>
+                <span class="web3-map-item">Hyperliquid（DEX API）</span>
+                <span class="web3-map-item">RedotPay / BVNK（支付）</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. 事件驱动/全球实时 -->
+  <div class="sol-card purple" onclick="toggle(this)">
+    <div class="sol-header">
+      <div class="sol-icon-bg"><span class="sol-icon">🌍</span></div>
+      <div class="sol-header-text">
+        <div class="sol-title">事件驱动 · 全球实时</div>
+        <div class="sol-web3-match">对标：Polymarket · CEX/DEX · GameFi</div>
+      </div>
+      <span class="sol-arrow">▾</span>
+    </div>
+    <div class="sol-tags">
+      <span class="sol-tag">Durable Objects</span>
+      <span class="sol-tag">Workers</span>
+      <span class="sol-tag">DDoS 防护</span>
+      <span class="sol-tag">全球 CDN</span>
+    </div>
+    <div class="sol-body">
+      <div class="sol-body-inner">
+        <div class="pain-section">
+          <div class="pain-label">WEB3 痛点</div>
+          <div class="pain-list">
+            <div class="pain-item"><div class="pain-dot"></div>美国大选、加密法案、BTC 大涨大跌瞬间引发访问量 100x 暴增</div>
+            <div class="pain-item"><div class="pain-dot"></div>Polymarket 等预测市场：事件结算时全球用户同时涌入，传统架构崩溃</div>
+            <div class="pain-item"><div class="pain-dot"></div>GameFi 赛季活动、NFT 发售：巴西玩家连接欧洲服务器延迟 1 秒 = 赌注被拒绝</div>
+            <div class="pain-item"><div class="pain-dot"></div>60 万并发 WebSocket 连接需要 300 台后端服务器，成本极高</div>
+          </div>
+        </div>
+        <div class="prod-section">
+          <div class="prod-label">CLOUDFLARE 产品</div>
+          <div class="prod-grid">
+            <span class="prod-pill">Durable Objects（边缘状态）</span>
+            <span class="prod-pill">Workers（边缘计算）</span>
+            <span class="prod-pill">WebSocket 聚合</span>
+            <span class="prod-pill">全球 CDN</span>
+            <span class="prod-pill">DDoS 防护</span>
+          </div>
+        </div>
+        <div class="case-section">
+          <div class="case-label">真实案例 → Web3 映射</div>
+          <div class="case-card">
+            <div class="case-company">Kaizen Gaming（在线体育博彩）<span class="case-company-badge">已使用 Cloudflare</span></div>
+            <div class="case-result">用 Durable Objects 将 60 万并发连接聚合为 1000 个，带宽降低 90%（50Gb→2-3Gb），延迟从 1 秒降至 800ms，300 台后端服务器变成不需要。</div>
+            <div class="case-quote">"无论何时收到连接峰值，我们不再需要担心系统稳定性——这是真正的胜利。"— 首席工程师 Kostas</div>
+            <div class="web3-map">
+              <div class="web3-map-label">WEB3 同类客户</div>
+              <div class="web3-map-items">
+                <span class="web3-map-item">Polymarket（事件预测）</span>
+                <span class="web3-map-item">Hyperliquid（行情实时推送）</span>
+                <span class="web3-map-item">Axie Infinity（GameFi）</span>
+                <span class="web3-map-item">Binance（行情 WebSocket）</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. SaaS平台/全球商户 -->
+  <div class="sol-card green" onclick="toggle(this)">
+    <div class="sol-header">
+      <div class="sol-icon-bg"><span class="sol-icon">🏗</span></div>
+      <div class="sol-header-text">
+        <div class="sol-title">SaaS 平台 · 全球商户</div>
+        <div class="sol-web3-match">对标：ChainUP · 交易所SaaS · 机构托管</div>
+      </div>
+      <span class="sol-arrow">▾</span>
+    </div>
+    <div class="sol-tags">
+      <span class="sol-tag">Zero Trust Access</span>
+      <span class="sol-tag">Argo 智能路由</span>
+      <span class="sol-tag">Workers</span>
+      <span class="sol-tag">DDoS 防护</span>
+    </div>
+    <div class="sol-body">
+      <div class="sol-body-inner">
+        <div class="pain-section">
+          <div class="pain-label">WEB3 痛点</div>
+          <div class="pain-list">
+            <div class="pain-item"><div class="pain-dot"></div>ChainUP 服务全球 1000+ 交易所客户，每家客户的管理后台都是攻击面</div>
+            <div class="pain-item"><div class="pain-dot"></div>Fireblocks/Cobo 机构托管：内部管理系统使用 VPN 难以维护，经常被攻击</div>
+            <div class="pain-item"><div class="pain-dot"></div>全球分布式团队：新加坡、香港、迪拜员工访问内部系统延迟高</div>
+            <div class="pain-item"><div class="pain-dot"></div>嵌入式 SaaS 组件部署在客户网站内，需保护自身也要保护客户网站</div>
+          </div>
+        </div>
+        <div class="prod-section">
+          <div class="prod-label">CLOUDFLARE 产品</div>
+          <div class="prod-grid">
+            <span class="prod-pill">Zero Trust Access（替代VPN）</span>
+            <span class="prod-pill">Argo Smart Routing</span>
+            <span class="prod-pill">Workers（自定义逻辑）</span>
+            <span class="prod-pill">Rate Limiting</span>
+            <span class="prod-pill">DDoS 防护</span>
+          </div>
+        </div>
+        <div class="case-section">
+          <div class="case-label">真实案例 → Web3 映射</div>
+          <div class="case-card">
+            <div class="case-company">BridgerPay（SaaS支付平台）<span class="case-company-badge">已使用 Cloudflare</span></div>
+            <div class="case-result">5 分钟部署 Cloudflare Access 替代 VPN，保护全球商户管理后台。Argo 智能路由让新加坡用户页面加载速度提升 68%。Workers 每天拦截数千次恶意请求。</div>
+            <div class="case-quote">"5 分钟内完全配置好 Access，不需要重写代码或做任何其他改变。" — CTO Yaron Hersh</div>
+            <div class="web3-map">
+              <div class="web3-map-label">WEB3 同类客户</div>
+              <div class="web3-map-items">
+                <span class="web3-map-item">ChainUP（交易所SaaS）</span>
+                <span class="web3-map-item">Fireblocks（机构托管）</span>
+                <span class="web3-map-item">Chainalysis（合规SaaS）</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Web3开发者/降本增效 -->
+  <div class="sol-card red" onclick="toggle(this)">
+    <div class="sol-header">
+      <div class="sol-icon-bg"><span class="sol-icon">🚀</span></div>
+      <div class="sol-header-text">
+        <div class="sol-title">Web3 开发 · 降本增效</div>
+        <div class="sol-web3-match">对标：dApp团队 · GameFi · DeFi协议前端</div>
+      </div>
+      <span class="sol-arrow">▾</span>
+    </div>
+    <div class="sol-tags">
+      <span class="sol-tag">Workers</span>
+      <span class="sol-tag">R2 存储</span>
+      <span class="sol-tag">Pages</span>
+      <span class="sol-tag">IPFS Gateway</span>
+      <span class="sol-tag">ETH Gateway</span>
+    </div>
+    <div class="sol-body">
+      <div class="sol-body-inner">
+        <div class="pain-section">
+          <div class="pain-label">WEB3 痛点</div>
+          <div class="pain-list">
+            <div class="pain-item"><div class="pain-dot"></div>AWS S3 出流量费用随用户增长线性暴增，快速增长反而亏损</div>
+            <div class="pain-item"><div class="pain-dot"></div>自建 Ethereum 节点成本 $500-2000/月，小团队负担不起</div>
+            <div class="pain-item"><div class="pain-dot"></div>dApp 前端部署在中心化服务器，一旦宕机整个协议不可用</div>
+            <div class="pain-item"><div class="pain-dot"></div>全球玩家要快速部署游戏逻辑到距离用户最近的节点</div>
+            <div class="pain-item"><div class="pain-dot"></div>内部员工私自使用未授权 AI 工具（影子AI），泄露私钥/客户数据</div>
+          </div>
+        </div>
+        <div class="prod-section">
+          <div class="prod-label">CLOUDFLARE 产品</div>
+          <div class="prod-grid">
+            <span class="prod-pill">Workers（边缘游戏逻辑）</span>
+            <span class="prod-pill">R2（零出流量费存储）</span>
+            <span class="prod-pill">Pages（前端高可用部署）</span>
+            <span class="prod-pill">IPFS Gateway（去中心化）</span>
+            <span class="prod-pill">ETH Gateway（免费节点接入）</span>
+            <span class="prod-pill">AI Gateway（防影子AI）</span>
+            <span class="prod-pill">x402（API变现）</span>
+          </div>
+        </div>
+        <div class="case-section">
+          <div class="case-label">真实案例 → Web3 映射</div>
+          <div class="case-card">
+            <div class="case-company">Volcano Studio（Web3 链游 ChickCoop）<span class="case-company-badge">已使用 Cloudflare</span></div>
+            <div class="case-result">从 AWS 迁移到 Cloudflare：R2 零出流量费解决成本暴增问题；Workers 让游戏逻辑全球边缘部署，新功能发布速度提升 35%；支持数百万 Telegram 用户，无需自建服务器。</div>
+            <div class="case-quote">"数百万用户的现代 Web3 游戏应用可以完全建在 Cloudflare 开发者平台上。" — CEO Kane</div>
+            <div class="web3-map">
+              <div class="web3-map-label">WEB3 同类客户</div>
+              <div class="web3-map-items">
+                <span class="web3-map-item">Axie / Pixels（GameFi）</span>
+                <span class="web3-map-item">Uniswap（dApp前端）</span>
+                <span class="web3-map-item">dYdX（DeFi协议）</span>
+                <span class="web3-map-item">中小型Web3初创团队</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-left">CLOUDFLARE × WEB3 SOLUTIONS · iG&E GTM · 2026</div>
+  <div class="footer-right">
+    <span class="footer-tag">案例来源：cloudflare.com/case-studies</span>
+    <span class="footer-tag">Connect · Protect · Build</span>
+  </div>
+</div>
+
+<script>
+function toggle(el) {
+  el.classList.toggle('expanded');
+}
+</script>
+</body>
+</html>

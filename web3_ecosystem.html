@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Web3 行业生态全景图</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cf-orange: #F38020;
+    --cf-orange-2: #F5952E;
+    --cf-orange-3: #F8B060;
+    --cf-orange-4: #FACCAA;
+    --cf-orange-light: #FFF4EC;
+    --cf-dark: #0F0F0F;
+    --cf-dark-2: #1A1A1A;
+    --cf-dark-3: #252525;
+    --cf-dark-4: #303030;
+    --cf-text: #F0EDE8;
+    --cf-text-2: #A89F95;
+    --cf-text-3: #6B6560;
+    --cf-border: rgba(243,128,32,0.15);
+    --cf-border-2: rgba(243,128,32,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--cf-dark);
+    color: var(--cf-text);
+    font-family: 'Noto Sans SC', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(243,128,32,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(243,128,32,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Header */
+  .header {
+    position: relative;
+    z-index: 10;
+    padding: 48px 60px 32px;
+    border-bottom: 1px solid var(--cf-border);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .cf-badge {
+    background: var(--cf-orange);
+    color: white;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    padding: 5px 10px;
+    border-radius: 3px;
+  }
+
+  .cf-x {
+    color: var(--cf-text-3);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+  }
+
+  .doc-label {
+    background: var(--cf-dark-3);
+    border: 1px solid var(--cf-border);
+    color: var(--cf-text-2);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    padding: 5px 12px;
+    border-radius: 3px;
+  }
+
+  .header-main h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -1px;
+  }
+
+  .header-main h1 span {
+    color: var(--cf-orange);
+  }
+
+  .header-sub {
+    margin-top: 8px;
+    color: var(--cf-text-2);
+    font-size: 13px;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+  }
+
+  .header-right {
+    text-align: right;
+  }
+
+  .header-stat {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--cf-text-3);
+    margin-bottom: 4px;
+  }
+
+  .header-stat strong {
+    color: var(--cf-orange);
+    font-size: 14px;
+  }
+
+  /* Instruction bar */
+  .instruction {
+    position: relative;
+    z-index: 10;
+    padding: 12px 60px;
+    background: rgba(243,128,32,0.06);
+    border-bottom: 1px solid var(--cf-border-2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--cf-text-3);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .dot-pulse {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--cf-orange);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  /* Main content */
+  .main {
+    position: relative;
+    z-index: 10;
+    padding: 40px 60px 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* Layer */
+  .layer {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid var(--cf-border-2);
+    border-bottom: none;
+    transition: border-color 0.2s;
+  }
+
+  .layer:first-child { border-radius: 8px 8px 0 0; }
+  .layer:last-child { border-bottom: 1px solid var(--cf-border-2); border-radius: 0 0 8px 8px; }
+
+  .layer:hover { border-color: var(--cf-border); }
+
+  /* Layer label */
+  .layer-label {
+    width: 140px;
+    min-width: 140px;
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-right: 1px solid var(--cf-border-2);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .layer-label::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+  }
+
+  .layer-1 .layer-label::before { background: var(--cf-orange); }
+  .layer-2 .layer-label::before { background: var(--cf-orange-2); }
+  .layer-3 .layer-label::before { background: var(--cf-orange-3); }
+  .layer-4 .layer-label::before { background: var(--cf-orange-4); }
+
+  .layer-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--cf-text-3);
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+
+  .layer-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .layer-1 .layer-name { color: var(--cf-orange); }
+  .layer-2 .layer-name { color: var(--cf-orange-2); }
+  .layer-3 .layer-name { color: var(--cf-orange-3); }
+  .layer-4 .layer-name { color: var(--cf-orange-4); }
+
+  .layer-desc {
+    font-size: 10px;
+    color: var(--cf-text-3);
+    margin-top: 4px;
+    line-height: 1.4;
+    font-weight: 300;
+  }
+
+  /* Segments area */
+  .segments {
+    flex: 1;
+    padding: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-content: center;
+  }
+
+  /* Segment pill */
+  .segment {
+    cursor: pointer;
+    border-radius: 6px;
+    overflow: hidden;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid transparent;
+    min-width: 110px;
+  }
+
+  .segment:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+
+  .segment.active {
+    border-color: var(--cf-orange);
+    box-shadow: 0 0 0 1px rgba(243,128,32,0.3), 0 8px 32px rgba(243,128,32,0.2);
+  }
+
+  .segment-header {
+    padding: 8px 12px 7px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .segment-cat {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  .segment-arrow {
+    font-size: 10px;
+    transition: transform 0.2s;
+    opacity: 0.6;
+  }
+
+  .segment.active .segment-arrow {
+    transform: rotate(180deg);
+    opacity: 1;
+  }
+
+  /* Layer colors for segments */
+  .layer-1 .segment { background: rgba(243,128,32,0.08); }
+  .layer-1 .segment:hover, .layer-1 .segment.active { background: rgba(243,128,32,0.14); }
+  .layer-1 .segment-header { border-bottom: 1px solid rgba(243,128,32,0.15); }
+  .layer-1 .segment-cat { color: var(--cf-orange); }
+
+  .layer-2 .segment { background: rgba(245,149,46,0.08); }
+  .layer-2 .segment:hover, .layer-2 .segment.active { background: rgba(245,149,46,0.14); }
+  .layer-2 .segment-header { border-bottom: 1px solid rgba(245,149,46,0.15); }
+  .layer-2 .segment-cat { color: var(--cf-orange-2); }
+
+  .layer-3 .segment { background: rgba(248,176,96,0.08); }
+  .layer-3 .segment:hover, .layer-3 .segment.active { background: rgba(248,176,96,0.14); }
+  .layer-3 .segment-header { border-bottom: 1px solid rgba(248,176,96,0.15); }
+  .layer-3 .segment-cat { color: var(--cf-orange-3); }
+
+  .layer-4-cefi .segment { background: rgba(250,204,170,0.08); }
+  .layer-4-cefi .segment:hover, .layer-4-cefi .segment.active { background: rgba(250,204,170,0.14); }
+  .layer-4-cefi .segment-header { border-bottom: 1px solid rgba(250,204,170,0.15); }
+  .layer-4-cefi .segment-cat { color: var(--cf-orange-4); }
+
+  .layer-4-defi .segment { background: rgba(200,230,255,0.05); }
+  .layer-4-defi .segment:hover, .layer-4-defi .segment.active { background: rgba(200,230,255,0.1); }
+  .layer-4-defi .segment-header { border-bottom: 1px solid rgba(200,230,255,0.1); }
+  .layer-4-defi .segment-cat { color: #7EC8E3; }
+
+  /* Dropdown */
+  .segment-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .segment.active .segment-body {
+    max-height: 300px;
+  }
+
+  .segment-players {
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .player-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--cf-text-2);
+    line-height: 1.4;
+  }
+
+  .player-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .layer-1 .player-dot { background: var(--cf-orange); }
+  .layer-2 .player-dot { background: var(--cf-orange-2); }
+  .layer-3 .player-dot { background: var(--cf-orange-3); }
+  .layer-4-cefi .player-dot { background: var(--cf-orange-4); }
+  .layer-4-defi .player-dot { background: #7EC8E3; }
+
+  .player-ref {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--cf-text-3);
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  /* Layer 4 split */
+  .layer-4-split {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .split-header {
+    display: flex;
+    border-bottom: 1px solid var(--cf-border-2);
+  }
+
+  .split-side {
+    flex: 1;
+    padding: 10px 16px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-content: flex-start;
+  }
+
+  .split-side:first-child {
+    border-right: 1px solid var(--cf-border-2);
+  }
+
+  .split-label {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .split-label-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    padding: 3px 8px;
+    border-radius: 3px;
+  }
+
+  .cefi-label { color: var(--cf-orange-4); background: rgba(250,204,170,0.1); border: 1px solid rgba(250,204,170,0.2); }
+  .defi-label { color: #7EC8E3; background: rgba(200,230,255,0.06); border: 1px solid rgba(200,230,255,0.15); }
+
+  .split-label-desc {
+    font-size: 10px;
+    color: var(--cf-text-3);
+  }
+
+  /* Cloudflare banner */
+  .cf-banner {
+    position: relative;
+    z-index: 10;
+    margin: 0 60px;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, rgba(243,128,32,0.15), rgba(243,128,32,0.05));
+    border: 1px solid rgba(243,128,32,0.25);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 40px;
+  }
+
+  .cf-banner-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .cf-icon {
+    font-size: 20px;
+  }
+
+  .cf-banner-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--cf-orange);
+  }
+
+  .cf-banner-sub {
+    font-size: 11px;
+    color: var(--cf-text-2);
+    margin-top: 2px;
+  }
+
+  .cf-products {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .cf-product-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.5px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    background: rgba(243,128,32,0.12);
+    border: 1px solid rgba(243,128,32,0.2);
+    color: var(--cf-orange);
+  }
+
+  /* Arrow indicator between layers */
+  .layer-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 0;
+    position: relative;
+    z-index: 10;
+  }
+
+  .layer-arrow-line {
+    width: 1px;
+    height: 20px;
+    background: linear-gradient(to bottom, var(--cf-border), transparent);
+  }
+
+  /* Footer */
+  .footer {
+    position: relative;
+    z-index: 10;
+    padding: 24px 60px;
+    border-top: 1px solid var(--cf-border-2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-left {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--cf-text-3);
+    letter-spacing: 1px;
+  }
+
+  .footer-right {
+    display: flex;
+    gap: 16px;
+  }
+
+  .footer-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--cf-text-3);
+    background: var(--cf-dark-3);
+    border: 1px solid var(--cf-border-2);
+    padding: 3px 8px;
+    border-radius: 3px;
+  }
+
+  /* Scroll padding at bottom */
+  .scroll-pad { height: 40px; }
+
+  /* Animation on load */
+  .layer {
+    animation: fadeUp 0.5s both;
+  }
+  .layer:nth-child(1) { animation-delay: 0.05s; }
+  .layer:nth-child(2) { animation-delay: 0.1s; }
+  .layer:nth-child(3) { animation-delay: 0.15s; }
+  .layer:nth-child(4) { animation-delay: 0.2s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .cf-banner { animation: fadeUp 0.5s 0.35s both; }
+
+  /* Split bottom */
+  .split-bottom {
+    display: flex;
+    flex: 1;
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div>
+    <div class="logo-area" style="margin-bottom:16px">
+      <span class="cf-badge">CLOUDFLARE</span>
+      <span class="cf-x">×</span>
+      <span class="doc-label">WEB3 ECOSYSTEM MAP</span>
+    </div>
+    <div class="header-main">
+      <h1>Web3 行业<span>全景图</span></h1>
+      <div class="header-sub">按用户距离分层 · 中心化 vs 去中心化 · 点击色块展开详情</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="header-stat">全球加密用户 <strong>5.6亿+</strong></div>
+    <div class="header-stat">稳定币年结算量 <strong>$46万亿</strong></div>
+    <div class="header-stat">加密市场总市值 <strong>$3万亿</strong></div>
+    <div class="header-stat" style="margin-top:8px;font-size:9px">数据来源：CoinGecko 2025年报 · a16z State of Crypto 2025</div>
+  </div>
+</div>
+
+<!-- Instruction -->
+<div class="instruction">
+  <div class="dot-pulse"></div>
+  点击任意色块展开玩家详情 &nbsp;·&nbsp; 再次点击收起 &nbsp;·&nbsp; 从下往上阅读：基础设施 → 终端用户
+</div>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- ── LAYER 4: 终端用户层 ── -->
+  <div class="layer layer-4">
+    <div class="layer-label">
+      <div class="layer-num">LAYER 04</div>
+      <div class="layer-name">终端用户层</div>
+      <div class="layer-desc">用户直接使用的产品与平台</div>
+      <div style="margin-top:10px;font-size:9px;font-family:'DM Mono',monospace;color:var(--cf-text-3)">↑ 最靠近用户</div>
+    </div>
+    <div class="layer-4-split">
+      <div class="split-bottom">
+        <!-- CeFi side -->
+        <div class="split-side layer-4-cefi">
+          <div class="split-label">
+            <span class="split-label-text cefi-label">CEFI 中心化</span>
+            <span class="split-label-desc">有实体主体，中心化运营</span>
+          </div>
+
+          <div class="segment" onclick="toggle(this)">
+            <div class="segment-header">
+              <span class="segment-cat">CEX 交易所</span>
+              <span class="segment-arrow">▾</span>
+            </div>
+            <div class="segment-body">
+              <div class="segment-players">
+                <div class="player-item"><div class="player-dot"></div>Binance — 全球最大，3亿用户，2025年交易量$34万亿</div>
+                <div class="player-item"><div class="player-dot"></div>OKX — 全球第二，强于衍生品</div>
+                <div class="player-item"><div class="player-dot"></div>Coinbase — 合规标杆，美股上市</div>
+                <div class="player-item"><div class="player-dot"></div>Bybit — 衍生品为主，增速快</div>
+                <div class="player-item"><div class="player-dot"></div>Kraken — 欧美主流，合规导向</div>
+                <div class="player-ref">参考：CoinMarketCap 交易所排名</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="segment" onclick="toggle(this)">
+            <div class="segment-header">
+              <span class="segment-cat">中心化借贷</span>
+              <span class="segment-arrow">▾</span>
+            </div>
+            <div class="segment-body">
+              <div class="segment-players">
+                <div class="player-item"><div class="player-dot"></div>Nexo — 抵押借贷，利差收益</div>
+                <div class="player-item"><div class="player-dot"></div>Ledn — 比特币抵押贷款专家</div>
+                <div class="player-item"><div class="player-dot"></div>BlockFi — 已破产，行业警示</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="segment" onclick="toggle(this)">
+            <div class="segment-header">
+              <span class="segment-cat">中心化质押</span>
+              <span class="segment-arrow">▾</span>
+            </div>
+            <div class="segment-body">
+              <div class="segment-players">
+                <div class="player-item"><div class="player-dot"></div>Binance Staking — 最大规模</div>
+                <div class="player-item"><div class="player-dot"></div>OKX Earn — 多币种收益</div>
+                <div class="player-item"><div class="player-dot"></div>Coinbase Staking — 合规优先</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="segment" onclick="toggle(this)">
+            <div class="segment-header">
+              <span class="segment-cat">支付 / U卡</span>
+              <span class="segment-arrow">▾</span>
+            </div>
+            <div class="segment-body">
+              <div class="segment-players">
+                <div class="player-item"><div class="player-dot"></div>Binance Pay — 最大用户基础</div>
+                <div class="player-item"><div class="player-dot"></div>RedotPay — 新加坡独立品牌</div>
+                <div class="player-item"><div class="player-dot"></div>Alchemy Pay — 法币加密双轨</div>
+                <div class="player-item"><div class="player-dot"></div>Bybit Card / Crypto.com Card</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="segment" onclick="toggle(this)">
+            <div class="segment-header">
+              <span class="segment-cat">中心化钱包</span>
+              <span class="segment-arrow">▾</span>
+            </div>
+            <div class="segment-body">
+              <div class="segment-players">
+                <div class="player-item"><div class="player-dot"></div>Binance Web3 Wallet</div>
+                <div class="player-item"><div class="player-dot"></div>OKX Wallet</div>
+                <div class="player-item"><div class="player-dot"></div>Coinbase Wallet</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- DeFi side -->
+        <div class="split-side layer-4-defi">
+          <div class="split-label">
+            <span class="split-label-text defi-label">DEFI 去中心化</span>
+            <span class="split-label-desc">智能合约驱动，无中介</span>
+          </div>
+
+          <div class="segment" onclick="toggle(this)">
+            <div class="segment-header">
+              <span class="segment-cat">DEX 交易</span>
+              <span class="segment-arrow">▾</span>
+            </div>
+            <div class="segment-body">
+              <div class="segment-players">
+                <div class="player-item"><div class="player-dot"></div>Uniswap — 以太坊最大DEX，占80%份额</div>
+                <div class="player-item"><div class="player-dot"></div>Hyperliquid — 永续合约，2025年$2.9万亿</div>
+                <div class="player-item"><div class="player-dot"></div>PancakeSwap — BNB Chain主力</div>
+                <div class="player-item"><div class="player-dot"></div>dYdX / GMX — 永续合约专项</div>
+                <div class="player-ref">参考：DeFiLlama DEX 数据</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="segment" onclick="toggle(this)">
+            <div class="segment-header">
+              <span class="segment-cat">链上借贷</span>
+              <span class="segment-arrow">▾</span>
+            </div>
+            <div class="segment-body">
+              <div class="segment-players">
+                <div class="player-item"><div class="player-dot"></div>Aave — TVL最大，多链部署</div>
+                <div class="player-item"><div class="player-dot"></div>Compound — 借贷协议先驱</div>
+                <div class="player-item"><div class="player-dot"></div>MakerDAO — DAI稳定币发行方</div>
+                <div class="player-ref">参考：DeFiLlama 借贷TVL</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="segment" onclick="toggle(this)">
+            <div class="segment-header">
+              <span class="segment-cat">链上质押 / 再质押</span>
+              <span class="segment-arrow">▾</span>
+            </div>
+            <div class="segment-body">
+              <div class="segment-players">
+                <div class="player-item"><div class="player-dot"></div>Lido — 最大流动性质押，TVL $300亿+</div>
+                <div class="player-item"><div class="player-dot"></div>EigenLayer — 再质押赛道龙头</div>
+                <div class="player-item"><div class="player-dot"></div>Rocket Pool — 去中心化质押</div>
+                <div class="player-item"><div class="player-dot"></div>Symbiotic — 新兴再质押协议</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="segment" onclick="toggle(this)">
+            <div class="segment-header">
+              <span class="segment-cat">收益聚合</span>
+              <span class="segment-arrow">▾</span>
+            </div>
+            <div class="segment-body">
+              <div class="segment-players">
+                <div class="player-item"><div class="player-dot"></div>Yearn Finance — 自动化收益策略</div>
+                <div class="player-item"><div class="player-dot"></div>Pendle — 利率衍生品 / 收益代币化</div>
+                <div class="player-item"><div class="player-dot"></div>Convex Finance — Curve收益放大</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="segment" onclick="toggle(this)">
+            <div class="segment-header">
+              <span class="segment-cat">跨链桥</span>
+              <span class="segment-arrow">▾</span>
+            </div>
+            <div class="segment-body">
+              <div class="segment-players">
+                <div class="player-item"><div class="player-dot"></div>Stargate — 最大跨链流动性协议</div>
+                <div class="player-item"><div class="player-dot"></div>Across — 快速意图桥</div>
+                <div class="player-item"><div class="player-dot"></div>Hop Protocol — Layer2跨链专项</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="segment" onclick="toggle(this)">
+            <div class="segment-header">
+              <span class="segment-cat">非托管钱包</span>
+              <span class="segment-arrow">▾</span>
+            </div>
+            <div class="segment-body">
+              <div class="segment-players">
+                <div class="player-item"><div class="player-dot"></div>MetaMask — 全球最大，3000万用户</div>
+                <div class="player-item"><div class="player-dot"></div>Phantom — Solana生态主力</div>
+                <div class="player-item"><div class="player-dot"></div>Trust Wallet — Binance旗下</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="segment" onclick="toggle(this)">
+            <div class="segment-header">
+              <span class="segment-cat">NFT / GameFi / MEME</span>
+              <span class="segment-arrow">▾</span>
+            </div>
+            <div class="segment-body">
+              <div class="segment-players">
+                <div class="player-item"><div class="player-dot"></div>OpenSea / Blur / Magic Eden — NFT市场</div>
+                <div class="player-item"><div class="player-dot"></div>Axie Infinity / Pixels / Ronin — GameFi</div>
+                <div class="player-item"><div class="player-dot"></div>Pump.fun / Moonshot — MEME发行</div>
+                <div class="player-item"><div class="player-dot"></div>Binance Launchpad / CoinList — IDO</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="segment" onclick="toggle(this)">
+            <div class="segment-header">
+              <span class="segment-cat">社交 / 预测 / 身份</span>
+              <span class="segment-arrow">▾</span>
+            </div>
+            <div class="segment-body">
+              <div class="segment-players">
+                <div class="player-item"><div class="player-dot"></div>Farcaster / Lens — 去中心化社交</div>
+                <div class="player-item"><div class="player-dot"></div>Polymarket — 去中心化预测市场</div>
+                <div class="player-item"><div class="player-dot"></div>ENS — 以太坊域名服务</div>
+                <div class="player-item"><div class="player-dot"></div>Worldcoin — 链上身份 / World ID</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="segment" onclick="toggle(this)">
+            <div class="segment-header">
+              <span class="segment-cat">数据分析</span>
+              <span class="segment-arrow">▾</span>
+            </div>
+            <div class="segment-body">
+              <div class="segment-players">
+                <div class="player-item"><div class="player-dot"></div>Dune Analytics — 链上数据查询</div>
+                <div class="player-item"><div class="player-dot"></div>DeFiLlama — TVL权威数据</div>
+                <div class="player-item"><div class="player-dot"></div>Nansen — 链上地址标签</div>
+                <div class="player-item"><div class="player-dot"></div>CoinMarketCap / CoinGecko — 市场数据</div>
+                <div class="player-item"><div class="player-dot"></div>Glassnode — 机构级链上分析</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── LAYER 3: 金融服务层 ── -->
+  <div class="layer layer-3">
+    <div class="layer-label">
+      <div class="layer-num">LAYER 03</div>
+      <div class="layer-name">金融服务层</div>
+      <div class="layer-desc">为终端产品提供基础金融能力的B端服务</div>
+    </div>
+    <div class="segments">
+
+      <div class="segment" onclick="toggle(this)">
+        <div class="segment-header">
+          <span class="segment-cat">机构托管 MPC</span>
+          <span class="segment-arrow">▾</span>
+        </div>
+        <div class="segment-body">
+          <div class="segment-players">
+            <div class="player-item"><div class="player-dot"></div>Fireblocks — 估值$80亿，1800+机构客户，$6万亿+资产转移</div>
+            <div class="player-item"><div class="player-dot"></div>Cobo — 亚洲最重要机构托管，MAS持牌，WaaS服务</div>
+            <div class="player-item"><div class="player-dot"></div>Anchorage — 美国首个获OCC银行牌照的加密托管</div>
+            <div class="player-item"><div class="player-dot"></div>Copper — 欧洲机构托管领导者</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="segment" onclick="toggle(this)">
+        <div class="segment-header">
+          <span class="segment-cat">交易所 SaaS</span>
+          <span class="segment-arrow">▾</span>
+        </div>
+        <div class="segment-body">
+          <div class="segment-players">
+            <div class="player-item"><div class="player-dot"></div>ChainUP — 新加坡，亚洲最大交易所SaaS，服务1000+客户</div>
+            <div class="player-item"><div class="player-dot"></div>Binance Cloud / WaaS — 币安底层技术输出</div>
+            <div class="player-item"><div class="player-dot"></div>AlphaPoint — 面向机构的交易所技术</div>
+            <div class="player-item"><div class="player-dot"></div>Openware — 开源交易所引擎</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="segment" onclick="toggle(this)">
+        <div class="segment-header">
+          <span class="segment-cat">企业级支付中间层</span>
+          <span class="segment-arrow">▾</span>
+        </div>
+        <div class="segment-body">
+          <div class="segment-players">
+            <div class="player-item"><div class="player-dot"></div>BVNK — 企业稳定币API，B2B跨境支付</div>
+            <div class="player-item"><div class="player-dot"></div>Stripe（Bridge）— 传统支付巨头收购，稳定币基础设施</div>
+            <div class="player-item"><div class="player-dot"></div>Circle Payments Network — USDC企业结算网络</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="segment" onclick="toggle(this)">
+        <div class="segment-header">
+          <span class="segment-cat">做市商</span>
+          <span class="segment-arrow">▾</span>
+        </div>
+        <div class="segment-body">
+          <div class="segment-players">
+            <div class="player-item"><div class="player-dot"></div>Wintermute — 全球最大加密做市商之一</div>
+            <div class="player-item"><div class="player-dot"></div>Jump Crypto — 机构背景，多策略</div>
+            <div class="player-item"><div class="player-dot"></div>GSR — 专注加密衍生品</div>
+            <div class="player-item"><div class="player-dot"></div>Cumberland — DRW旗下，OTC为主</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="segment" onclick="toggle(this)">
+        <div class="segment-header">
+          <span class="segment-cat">合规 / 链上监控</span>
+          <span class="segment-arrow">▾</span>
+        </div>
+        <div class="segment-body">
+          <div class="segment-players">
+            <div class="player-item"><div class="player-dot"></div>Chainalysis — 市场领导者，服务全球执法机构</div>
+            <div class="player-item"><div class="player-dot"></div>Elliptic — 欧洲主流，专注金融合规</div>
+            <div class="player-item"><div class="player-dot"></div>TRM Labs — 增速最快，专注制裁筛查</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── LAYER 2: 资产/货币层 ── -->
+  <div class="layer layer-2">
+    <div class="layer-label">
+      <div class="layer-num">LAYER 02</div>
+      <div class="layer-name">资产 / 货币层</div>
+      <div class="layer-desc">链上资产的创造与发行</div>
+    </div>
+    <div class="segments">
+
+      <div class="segment" onclick="toggle(this)">
+        <div class="segment-header">
+          <span class="segment-cat">稳定币</span>
+          <span class="segment-arrow">▾</span>
+        </div>
+        <div class="segment-body">
+          <div class="segment-players">
+            <div class="player-item"><div class="player-dot"></div>Tether（USDT）— 市值第一，$1400亿+，2025年净利润$100亿+</div>
+            <div class="player-item"><div class="player-dot"></div>Circle（USDC）— 合规标杆，2024年收入$16.8亿</div>
+            <div class="player-item"><div class="player-dot"></div>PayPal PYUSD — 传统支付巨头入场</div>
+            <div class="player-ref">参考：DeFiLlama 稳定币页</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="segment" onclick="toggle(this)">
+        <div class="segment-header">
+          <span class="segment-cat">RWA 现实资产代币化</span>
+          <span class="segment-arrow">▾</span>
+        </div>
+        <div class="segment-body">
+          <div class="segment-players">
+            <div class="player-item"><div class="player-dot"></div>Ondo Finance — 代币化美债龙头</div>
+            <div class="player-item"><div class="player-dot"></div>Franklin Templeton — 传统资管入场链上</div>
+            <div class="player-item"><div class="player-dot"></div>BlackRock BUIDL — 机构级RWA基金</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="segment" onclick="toggle(this)">
+        <div class="segment-header">
+          <span class="segment-cat">DePIN 资产</span>
+          <span class="segment-arrow">▾</span>
+        </div>
+        <div class="segment-body">
+          <div class="segment-players">
+            <div class="player-item"><div class="player-dot"></div>Helium — 去中心化WiFi网络，token激励带宽共享</div>
+            <div class="player-item"><div class="player-dot"></div>Filecoin — 去中心化存储，对标AWS S3</div>
+            <div class="player-item"><div class="player-dot"></div>Render Network — 去中心化GPU，对标CoreWeave</div>
+            <div class="player-item"><div class="player-dot"></div>io.net — 去中心化AI算力聚合</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="segment" onclick="toggle(this)">
+        <div class="segment-header">
+          <span class="segment-cat">项目代币发行</span>
+          <span class="segment-arrow">▾</span>
+        </div>
+        <div class="segment-body">
+          <div class="segment-players">
+            <div class="player-item"><div class="player-dot"></div>Binance Launchpad — 最大IDO平台</div>
+            <div class="player-item"><div class="player-dot"></div>CoinList — 合规项目首发</div>
+            <div class="player-item"><div class="player-dot"></div>Pump.fun — Solana MEME发行平台</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── LAYER 1: 基础设施层 ── -->
+  <div class="layer layer-1">
+    <div class="layer-label">
+      <div class="layer-num">LAYER 01</div>
+      <div class="layer-name">基础设施层</div>
+      <div class="layer-desc">区块链底层协议与算力网络</div>
+      <div style="margin-top:10px;font-size:9px;font-family:'DM Mono',monospace;color:var(--cf-text-3)">↓ 最远离用户</div>
+    </div>
+    <div class="segments">
+
+      <div class="segment" onclick="toggle(this)">
+        <div class="segment-header">
+          <span class="segment-cat">L1 / L2 公链</span>
+          <span class="segment-arrow">▾</span>
+        </div>
+        <div class="segment-body">
+          <div class="segment-players">
+            <div class="player-item"><div class="player-dot"></div>Ethereum — L1主链，智能合约鼻祖，DeFi生态基础</div>
+            <div class="player-item"><div class="player-dot"></div>Solana — 高性能L1，400ms出块，$0.00025 Gas</div>
+            <div class="player-item"><div class="player-dot"></div>Arbitrum — Ethereum最大L2，TVL领先</div>
+            <div class="player-item"><div class="player-dot"></div>Base — Coinbase旗下L2，x402核心结算链</div>
+            <div class="player-item"><div class="player-dot"></div>Polygon — 企业采用最广的L2</div>
+            <div class="player-ref">参考：Glassnode · L2Beat</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="segment" onclick="toggle(this)">
+        <div class="segment-header">
+          <span class="segment-cat">节点服务 RPC</span>
+          <span class="segment-arrow">▾</span>
+        </div>
+        <div class="segment-body">
+          <div class="segment-players">
+            <div class="player-item"><div class="player-dot"></div>Alchemy — 估值$102亿，Uniswap/OpenSea/Adobe客户</div>
+            <div class="player-item"><div class="player-dot"></div>Infura — ConsenSys旗下，MetaMask默认节点</div>
+            <div class="player-item"><div class="player-dot"></div>QuickNode — 130+条链支持，x402原生接入</div>
+            <div class="player-item"><div class="player-dot"></div>Ankr — 去中心化节点网络</div>
+            <div class="player-item"><div class="player-dot"></div>Cloudflare Ethereum Gateway — 免费入门级接入</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="segment" onclick="toggle(this)">
+        <div class="segment-header">
+          <span class="segment-cat">AI 算力云平台</span>
+          <span class="segment-arrow">▾</span>
+        </div>
+        <div class="segment-body">
+          <div class="segment-players">
+            <div class="player-item"><div class="player-dot"></div>CoreWeave — 最大独立AI算力云，估值$190亿</div>
+            <div class="player-item"><div class="player-dot"></div>io.net — 去中心化GPU聚合，Web3原生算力</div>
+            <div class="player-item"><div class="player-dot"></div>Akash Network — 去中心化云计算市场</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- Cloudflare banner -->
+<div class="cf-banner">
+  <div class="cf-banner-left">
+    <span class="cf-icon">☁</span>
+    <div>
+      <div class="cf-banner-title">Cloudflare — 全层级基础设施服务商</div>
+      <div class="cf-banner-sub">每一层的玩家都是潜在客户 · 安全 + 性能 + 开发者工具 + AI支付协议</div>
+    </div>
+  </div>
+  <div class="cf-products">
+    <span class="cf-product-tag">DDoS 防护</span>
+    <span class="cf-product-tag">WAF</span>
+    <span class="cf-product-tag">Bot Management</span>
+    <span class="cf-product-tag">Workers</span>
+    <span class="cf-product-tag">R2 存储</span>
+    <span class="cf-product-tag">Zero Trust</span>
+    <span class="cf-product-tag">AI Gateway</span>
+    <span class="cf-product-tag">x402 协议</span>
+    <span class="cf-product-tag">Ethereum Gateway</span>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <div class="footer-left">WEB3 ECOSYSTEM MAP · CLOUDFLARE iG&E GTM · 2026</div>
+  <div class="footer-right">
+    <span class="footer-tag">数据来源：CoinGecko · DeFiLlama · CoinMarketCap · Glassnode · CertiK</span>
+    <span class="footer-tag">按用户距离分层 · 4层架构</span>
+  </div>
+</div>
+
+<script>
+  function toggle(el) {
+    el.classList.toggle('active');
+  }
+</script>
+</body>
+</html>
